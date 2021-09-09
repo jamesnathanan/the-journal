@@ -1,3 +1,18 @@
+// Load the full build.
+var _ = require("lodash");
+// // Load the core build.
+// var _ = require("lodash/core");
+// Load the FP build for immutable auto-curried iteratee-first data-last methods.
+var fp = require("lodash/fp");
+
+// Load method categories.
+var array = require("lodash/array");
+var object = require("lodash/fp/object");
+
+// Cherry-pick methods for smaller browserify/rollup/webpack bundles.
+var at = require("lodash/at");
+var curryN = require("lodash/fp/curryN");
+
 //jshint esversion:6
 
 const express = require("express");
@@ -14,6 +29,8 @@ const contactContent =
 const posts = [];
 
 const app = express();
+
+app.locals._ = _;
 
 app.set("view engine", "ejs");
 
@@ -38,11 +55,14 @@ app.get("/compose", (req, res) => {
 });
 
 app.get("/posts/:postName", (req, res) => {
-  const requestedTitle = req.params.postName;
+  const requestedTitle = _.lowerCase(req.params.postName);
+  // const lo_requestedTitle = _.lowerCase(requestedTitle);
   posts.forEach((post) => {
-    const storedTitle = post.title;
+    const storedTitle = _.lowerCase(post.title);
+    // const lo_storedTitle = _.lowerCase(storedTitle);
     if (storedTitle === requestedTitle) {
       console.log("Math Found");
+      res.render("post", { title: post.title, content: post.content });
     }
   });
 });
